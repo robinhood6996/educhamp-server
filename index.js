@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require('mongodb');
+const res = require('express/lib/response');
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000;
@@ -18,11 +19,10 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-<<<<<<< HEAD
         const database = client.db("insertDB");
         const haiku = database.collection("haiku");
         const reviewCollection = database.collection("review")
-=======
+
         const database = client.db("EDU_Champ");
         const usersCollection = database.collection("users");
 
@@ -45,13 +45,44 @@ async function run() {
             res.send(result)
         })
 
->>>>>>> 033275a09d99e12a04ae40db5e4146dad61ee295
+        //make user admin
+        app.put('/users/admin', async (req, res) => {
+            const email = req.body.email 
+            const filter = {email : email}
+            const updateDoc = {
+                $set : {
+                    role : 'admin'
+                }
+            }
+            const user = await usersCollection.updateOne(filter, updateDoc)
+            res.json(user)
+        })
 
+        app.get('/users/:email', async(req, res) => {
+            const email = req.params.email
+            const query = {email : email}
+            const user = await usersCollection.findOne(query)
+            let isAdmin = false
+            if (user.role === 'admin') {
+                isAdmin = true
+            }
+            else{
+                isAdmin = false
+            }
+            const result = {admin : isAdmin}
+            res.send(result)
+        })
 
+        //review collection for user
         app.post('/review', async (req, res) => {
             const data = req.body
             const review = await reviewCollection.insertOne(data)
             res.json(review)
+        })
+
+        app.get('/review', async(req, res) => {
+            const review = await reviewCollection.find({}).toArray()
+            res.send(review)
         })
     } finally {
         //   await client.close();
