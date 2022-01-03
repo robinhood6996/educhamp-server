@@ -18,9 +18,34 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
+<<<<<<< HEAD
         const database = client.db("insertDB");
         const haiku = database.collection("haiku");
         const reviewCollection = database.collection("review")
+=======
+        const database = client.db("EDU_Champ");
+        const usersCollection = database.collection("users");
+
+
+
+        /* =========User data Post api for save user email,name,photo, in db=== */
+        app.post('/users', async (req, res) => {
+            const result = await usersCollection.insertOne(req.body)
+            // res.send(result)
+            console.log(result);
+        })
+        /* ===========upsert/put new user Api for google log in data=========== */
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user }
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            // console.log(result);
+            res.send(result)
+        })
+
+>>>>>>> 033275a09d99e12a04ae40db5e4146dad61ee295
 
 
         app.post('/review', async (req, res) => {
