@@ -20,8 +20,14 @@ async function run() {
         await client.connect();
         const database = client.db("insertDB");
         const haiku = database.collection("haiku");
+        const reviewCollection = database.collection("review")
 
 
+        app.post('/review', async (req, res) => {
+            const data = req.body
+            const review = await reviewCollection.insertOne(data)
+            res.json(review)
+        })
     } finally {
         //   await client.close();
     }
