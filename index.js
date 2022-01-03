@@ -26,7 +26,8 @@ async function run() {
         /* =========User data Post api for save user email,name,photo, in db=== */
         app.post('/users', async (req, res) => {
             const result = await usersCollection.insertOne(req.body)
-            res.send(result)
+            // res.send(result)
+            console.log(result);
         })
         /* ===========upsert/put new user Api for google log in data=========== */
         app.put('/users', async (req, res) => {
