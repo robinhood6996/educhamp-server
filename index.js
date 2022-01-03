@@ -45,6 +45,11 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/user', async(req, res) => {
+            const result = await usersCollection.find({}).toArray()
+            res.send(result)
+        })
+
         //make user admin
         app.put('/users/admin', async (req, res) => {
             const email = req.body.email 
