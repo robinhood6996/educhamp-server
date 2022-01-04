@@ -27,7 +27,9 @@ async function run() {
 
         /* =========User data Post api for save user email,name,photo, in db=== */
         app.post('/users', async (req, res) => {
-            const result = await usersCollection.insertOne(req.body)
+            const user = req.body
+            user.role = 'user'
+            const result = await usersCollection.insertOne(user)
             // res.send(result)
             console.log(result);
         })
@@ -41,7 +43,18 @@ async function run() {
             // console.log(result);
             res.send(result)
         })
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin });
+        })
 
+        
         app.get('/users', async(req, res) => {
             const result = await usersCollection.find({}).toArray()
             res.send(result)
@@ -61,20 +74,7 @@ async function run() {
             res.json(user)
         })
 
-        app.get('/users/:email', async(req, res) => {
-            const email = req.params.email
-            const query = {email : email}
-            const user = await usersCollection.findOne(query)
-            let isAdmin = false
-            if (user.role === 'admin') {
-                isAdmin = true
-            }
-            else{
-                isAdmin = false
-            }
-            const result = {admin : isAdmin}
-            res.send(result)
-        })
+        
 
         //review collection for user
         app.post('/review', async (req, res) => {
