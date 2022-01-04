@@ -130,7 +130,20 @@ async function run() {
             res.json(result)
         });
 
+        //get courses
+        app.get('/course', async (req, res) => {
+            const courses = await courseCollection.find({}).toArray()
+            res.send(courses);
+        });
 
+        //get single course
+        app.get('/course/:id', async (req, res) => {
+            const id = req.params;
+            const query = { _id: ObjectId(id) };
+            const course = await courseCollection.findOne(query);
+            console.log(course);
+            res.send(course);
+        })
 
     } finally {
         //   await client.close();
