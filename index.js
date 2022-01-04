@@ -134,12 +134,15 @@ async function run() {
             const price = data.price;
             const details = data.details;
             const video = data.video;
+            const language = data.language;
+            const skill = data.skill;
+            const instructor = data.instructor;
             const picData = req.files.thumb.data;
             const encodedPic = picData.toString('base64');
             const picBuffer = Buffer.from(encodedPic, 'base64');
-            const course = { title, category, price, details, video, thumb: picBuffer };
+            const course = { title, category, price, details, video, language, instructor, skill, thumb: picBuffer };
             const result = await courseCollection.insertOne(course);
-            res.json(result)
+            res.json(result);
         });
 
         //get courses
