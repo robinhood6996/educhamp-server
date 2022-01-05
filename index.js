@@ -29,6 +29,7 @@ async function run() {
         const reviewCollection = database.collection("review")
         const usersCollection = database.collection("users");
         const courseCollection = database.collection("course");
+        const enrolledCollection = database.collection("enrolled");
 
 
 
@@ -40,6 +41,7 @@ async function run() {
             // res.send(result)
             console.log(result);
         })
+        
         /* ===========upsert/put new user Api for google log in data=========== */
         app.put('/users', async (req, res) => {
             const user = req.body;
@@ -102,6 +104,13 @@ async function run() {
             res.json(review)
         })
 
+        app.post('/enroll', async (req, res) => {
+            const data = req.body
+            console.log(data);
+            // const review = await enrolledCollection.insertOne(data)
+            res.json('review')
+        })
+
         //get reivew
         app.get('/review', async (req, res) => {
             const review = await reviewCollection.find({}).toArray()
@@ -111,9 +120,9 @@ async function run() {
         //create payment
         app.post("/create-payment-intent", async (req, res) => {
             const paymentInfo = req.body;
-            const amount = paymentInfo.totalAmount * 100
+            const amount = paymentInfo.price * 100
             // Create a PaymentIntent with the order amount and currency
-            console.log(amount);
+
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
                 currency: "eur",
