@@ -144,7 +144,6 @@ async function run() {
             const id = req.params;
             const query = { _id: ObjectId(id) };
             const course = await courseCollection.findOne(query);
-            console.log(course);
             res.send(course);
         });
 
