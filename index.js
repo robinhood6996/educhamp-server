@@ -8,6 +8,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const fileUpload = require('express-fileupload');
+const { query } = require('express');
 
 
 
@@ -40,7 +41,7 @@ async function run() {
             const result = await usersCollection.insertOne(user)
             // res.send(result)
             console.log(result);
-        })
+        });
 
         /* ===========upsert/put new user Api for google log in data=========== */
         app.put('/users', async (req, res) => {
@@ -51,22 +52,12 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             // console.log(result);
             res.send(result)
-        })
-        app.get('/users/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
-            const user = await usersCollection.findOne(query);
-            let isAdmin = false;
-            if (user?.role === 'admin') {
-                isAdmin = true;
-            }
-            res.json({ admin: isAdmin });
-        })
+        });
 
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find({}).toArray()
             res.send(result)
-        })
+        });
 
 
         //make user admin
@@ -79,22 +70,22 @@ async function run() {
                 }
             }
             const user = await usersCollection.updateOne(filter, updateDoc)
-            res.json(user)
-        })
+            res.json(user);
+        });
 
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email
             const query = { email: email }
             const user = await usersCollection.findOne(query)
-            let isAdmin = false
-            if (user.role === 'admin') {
-                isAdmin = true
+            let isAdmin = false;
+            if (user?.role == 'admin') {
+                isAdmin = true;
             }
             else {
-                isAdmin = false
+                isAdmin = false;
             }
             const result = { admin: isAdmin }
-            res.send(result)
+            res.send(result);
         })
 
         //review collection for user
@@ -113,17 +104,25 @@ async function run() {
 
         //get enroll
         app.get('/enroll', async (req, res) => {
-            const enrolls = await enrolledCollection.find({}).toArray()
-            res.send(enrolls)
+            const email = req.query.email;
+            let enrolls = {}
+            if (email) {
+                enrolls = await enrolledCollection.find({ owner: email }).toArray()
+            }
+            else {
+                enrolls = await enrolledCollection.find({}).toArray()
+            }
+            res.json(enrolls)
         })
-        //get enroll
-        app.get('/enroll/:email', async (req, res) => {
-            const params = req.params;
-            console.log(params)
-            // const query = { owner: email };
-            // const enrolls = await enrolledCollection.find(query).toArray()
-            // res.send(enrolls)
-        })
+
+        // //get enroll
+        // app.get('/enrolled', async (req, res) => {
+        //     const params = req.query.email;
+        //     console.log(params)
+        //     // const query = { owner: email };
+        //     // const enrolls = await enrolledCollection.find(query).toArray()
+        //     // res.send(enrolls);
+        // });
 
         //get reivew
         app.get('/review', async (req, res) => {
