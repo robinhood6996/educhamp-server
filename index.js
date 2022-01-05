@@ -41,7 +41,7 @@ async function run() {
             // res.send(result)
             console.log(result);
         })
-        
+
         /* ===========upsert/put new user Api for google log in data=========== */
         app.put('/users', async (req, res) => {
             const user = req.body;
@@ -63,7 +63,7 @@ async function run() {
             res.json({ admin: isAdmin });
         })
 
-        app.get('/users', async(req, res) => {
+        app.get('/users', async (req, res) => {
             const result = await usersCollection.find({}).toArray()
             res.send(result)
         })
@@ -107,8 +107,22 @@ async function run() {
         app.post('/enroll', async (req, res) => {
             const data = req.body
             console.log(data);
-            // const review = await enrolledCollection.insertOne(data)
-            res.json('review')
+            const review = await enrolledCollection.insertOne(data)
+            res.json(review)
+        });
+
+        //get enroll
+        app.get('/enroll', async (req, res) => {
+            const enrolls = await enrolledCollection.find({}).toArray()
+            res.send(enrolls)
+        })
+        //get enroll
+        app.get('/enroll/:email', async (req, res) => {
+            const params = req.params;
+            console.log(params)
+            // const query = { owner: email };
+            // const enrolls = await enrolledCollection.find(query).toArray()
+            // res.send(enrolls)
         })
 
         //get reivew
